@@ -439,47 +439,20 @@
     <div id="toast" class="toast"></div>
 
     <!-- CDNs -->
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Feather Icons -->
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
     <!-- JavaScript -->
     <script>
-        // --- FIX: Global variables are now declared at the top of the script ---
+        // --- Global variables ---
         let auth, db, user, trendsUnsubscribe, userUnsubscribe;
         let trendChart;
         const VOTE_LIMIT_PER_DAY = 3;
 
-        // --- Firebase Configuration ---
-        // IMPORTANT: Replace this with your own Firebase project configuration.
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-        
-        // --- App Initialization ---
-        // Check if Firebase config is provided
-        if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
-            console.warn("Firebase config is missing. Using mock data. Please update firebaseConfig.");
-            initializeAppWithMockData();
-        } else {
-            // Initialize Firebase
-            firebase.initializeApp(firebaseConfig);
-            initializeAppWithFirebase();
-        }
-
-        // --- DOM Elements ---
+        // --- DOM Elements (declared early) ---
         const signInPrompt = document.getElementById('sign-in-prompt');
         const appContent = document.getElementById('app-content');
         const authButton = document.getElementById('auth-button');
@@ -491,21 +464,28 @@
         const trendsList = document.getElementById('trends-list');
         const userVoteInfo = document.getElementById('user-vote-info');
 
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // --- ALL FUNCTIONS ARE DEFINED HERE ---
 
-        // --- Toast Notification ---
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.className = 'toast show';
-            if (isError) {
-                toast.classList.add('error');
-            }
+            if (isError) toast.classList.add('error');
             setTimeout(() => {
                 toast.className = toast.className.replace('show', '');
             }, 3000);
         }
 
-        // --- UI Update Functions ---
         function updateUIForSignIn(currentUser) {
             user = currentUser;
             signInPrompt.classList.add('hidden');
@@ -544,7 +524,6 @@
             return `${year}-${month}-${day}`;
         }
 
-        // --- Chart.js Functions ---
         function initChart() {
             const ctx = document.getElementById('trends-chart').getContext('2d');
             trendChart = new Chart(ctx, {
@@ -563,40 +542,27 @@
                     responsive: true,
                     indexAxis: 'y',
                     scales: {
-                        x: {
-                            beginAtZero: true,
-                            ticks: { color: 'var(--gray)', stepSize: 1, precision: 0 },
-                            grid: { color: 'rgba(255,255,255,0.1)'}
-                        },
-                        y: {
-                            ticks: { color: 'var(--white)' },
-                            grid: { display: false }
-                        }
+                        x: { beginAtZero: true, ticks: { color: 'var(--gray)', precision: 0 }, grid: { color: 'rgba(255,255,255,0.1)'}},
+                        y: { ticks: { color: 'var(--white)' }, grid: { display: false }}
                     },
-                    plugins: {
-                        legend: { display: false }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
         }
         
         function updateChart(trends) {
             if (!trendChart) initChart();
-            
-            const topTrends = trends.slice(0, 7).reverse(); // Get top 7 for better display
-            
+            const topTrends = trends.slice(0, 7).reverse();
             trendChart.data.labels = topTrends.map(t => t.title.length > 25 ? t.title.substring(0, 22) + '...' : t.title);
             trendChart.data.datasets[0].data = topTrends.map(t => t.voteCount);
             trendChart.update();
         }
 
-        // --- Render Functions ---
         function renderTrends(trends, userVotes = []) {
             if (trends.length === 0) {
                 trendsList.innerHTML = '<div class="empty-state">No trends yet. Be the first to add one!</div>';
                 return;
             }
-
             trendsList.innerHTML = '';
             trends.forEach(trend => {
                 const trendCard = document.createElement('div');
@@ -625,15 +591,12 @@
                 `;
                 trendsList.appendChild(trendCard);
             });
-            feather.replace(); // Re-render icons
+            feather.replace();
         }
         
-        // --- Firebase Core Functions ---
         function initializeAppWithFirebase() {
             auth = firebase.auth();
             db = firebase.firestore();
-
-            // Auth State Listener
             auth.onAuthStateChanged(currentUser => {
                 if (currentUser) {
                     updateUIForSignIn(currentUser);
@@ -643,17 +606,15 @@
                     updateUIForSignOut();
                 }
             });
-            
-            // Event Listeners
             authButton.addEventListener('click', signInWithGoogle);
             signOutButton.addEventListener('click', signOut);
             trendForm.addEventListener('submit', handleTrendSubmit);
             trendsList.addEventListener('click', (e) => {
-                if(e.target.closest('.vote-btn')) {
-                    handleVote(e.target.closest('.vote-btn'));
+                const voteButton = e.target.closest('.vote-btn');
+                if(voteButton) {
+                    handleVote(voteButton);
                 }
             });
-            
             initChart();
         }
 
@@ -687,28 +648,21 @@
 
         function listenToUserData() {
             if (userUnsubscribe) userUnsubscribe();
-            
             const userRef = db.collection('users').doc(user.uid);
             userUnsubscribe = userRef.onSnapshot(async userDoc => {
                 let userData = userDoc.data();
                 let userVotes = [];
                 const today = getTodayDateString();
-
                 if (userData && userData.dailyVotes && userData.dailyVotes.date === today) {
                     userVotes = userData.dailyVotes.votedTrendIds || [];
                 } else {
-                    // Reset votes for a new day if date doesn't match
                     await userRef.set({ dailyVotes: { date: today, votedTrendIds: [] } }, { merge: true });
                 }
-                
                 const votesLeft = VOTE_LIMIT_PER_DAY - userVotes.length;
                 userVoteInfo.textContent = `You have ${votesLeft} vote${votesLeft !== 1 ? 's' : ''} left for today.`;
-                
-                // Re-render trends with updated vote button states
                 const trendsSnapshot = await db.collection('trends').orderBy('voteCount', 'desc').get();
                 const trends = trendsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderTrends(trends, userVotes);
-
             }, error => {
                 console.error("Error listening to user data:", error);
                 showToast("Could not sync user vote data.", true);
@@ -720,24 +674,13 @@
             const title = document.getElementById('trend-title').value.trim();
             const description = document.getElementById('trend-description').value.trim();
             const tagsRaw = document.getElementById('trend-tags').value.trim();
-            
             if (!title || !description) {
                 showToast('Title and description are required.', true);
                 return;
             }
-
-            const tags = tagsRaw ? tagsRaw.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
-
+            const tags = tagsRaw ? tagsRaw.split(',').map(tag => tag.trim()).filter(Boolean) : [];
             try {
-                await db.collection('trends').add({
-                    title,
-                    description,
-                    tags,
-                    creatorName: user.displayName,
-                    creatorUid: user.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    voteCount: 0
-                });
+                await db.collection('trends').add({ title, description, tags, creatorName: user.displayName, creatorUid: user.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp(), voteCount: 0 });
                 showToast('Trend submitted successfully!');
                 trendForm.reset();
             } catch (error) {
@@ -751,35 +694,20 @@
                 showToast('You must be signed in to vote.', true);
                 return;
             }
-
             button.disabled = true;
             const trendId = button.dataset.id;
             const userRef = db.collection('users').doc(user.uid);
             const trendRef = db.collection('trends').doc(trendId);
             const today = getTodayDateString();
-
             try {
                 await db.runTransaction(async (transaction) => {
                     const userDoc = await transaction.get(userRef);
                     let dailyVotes = userDoc.data()?.dailyVotes || { date: '', votedTrendIds: [] };
-
-                    if (dailyVotes.date !== today) {
-                        dailyVotes = { date: today, votedTrendIds: [] };
-                    }
-                    
-                    if (dailyVotes.votedTrendIds.length >= VOTE_LIMIT_PER_DAY) {
-                        throw new Error("You have reached your daily vote limit.");
-                    }
-                    if (dailyVotes.votedTrendIds.includes(trendId)) {
-                        throw new Error("You have already voted for this trend today.");
-                    }
-                    
+                    if (dailyVotes.date !== today) dailyVotes = { date: today, votedTrendIds: [] };
+                    if (dailyVotes.votedTrendIds.length >= VOTE_LIMIT_PER_DAY) throw new Error("You have reached your daily vote limit.");
+                    if (dailyVotes.votedTrendIds.includes(trendId)) throw new Error("You have already voted for this trend today.");
                     dailyVotes.votedTrendIds.push(trendId);
-                    
-                    transaction.update(trendRef, {
-                        voteCount: firebase.firestore.FieldValue.increment(1)
-                    });
-                    
+                    transaction.update(trendRef, { voteCount: firebase.firestore.FieldValue.increment(1) });
                     transaction.set(userRef, { dailyVotes }, { merge: true });
                 });
                 showToast('Vote counted!');
@@ -789,7 +717,6 @@
             }
         }
 
-        // --- Mock Data Functions (for when Firebase config is missing) ---
         function initializeAppWithMockData() {
             const mockTrends = [
                 { id: '1', title: 'Decentralized Social Media', description: 'Social platforms built on blockchain...', tags: ['web3', 'social'], creatorName: 'Alice', createdAt: new Date(), voteCount: 42 },
@@ -797,26 +724,28 @@
                 { id: '3', title: 'Sustainable Tech Gadgets', description: 'Electronics made from recycled materials...', tags: ['sustainability', 'hardware'], creatorName: 'Charlie', createdAt: new Date(), voteCount: 15 },
             ];
             mockTrends.forEach(t => t.createdAt = { toDate: () => t.createdAt });
-            
-            document.addEventListener('DOMContentLoaded', () => {
-                signInPrompt.innerHTML = `<h2>Demo Mode</h2><p>Firebase configuration is missing. Displaying mock data. Functionality is disabled.</p>`;
-                appContent.classList.remove('hidden');
-                document.getElementById('auth-container').classList.add('hidden');
-                
-                const formCard = document.getElementById('trend-form').closest('.section-card');
-                if (formCard) {
-                    formCard.classList.add('hidden');
-                }
-                
-                renderTrends(mockTrends, ['1']); // Mock: disable vote button for first item
-                initChart();
-                updateChart(mockTrends);
-                feather.replace();
-            });
+            signInPrompt.innerHTML = `<h2>Demo Mode</h2><p>Firebase configuration is missing. Displaying mock data. Functionality is disabled.</p>`;
+            appContent.classList.remove('hidden');
+            document.getElementById('auth-container').classList.add('hidden');
+            const formCard = document.getElementById('trend-form').closest('.section-card');
+            if (formCard) formCard.classList.add('hidden');
+            renderTrends(mockTrends, ['1']);
+            initChart();
+            updateChart(mockTrends);
         }
-        
-        // --- Final Setup ---
-        feather.replace(); // Initial icon render
+
+        // --- APP ENTRY POINT ---
+        // FIX: All initialization logic is now safely wrapped in DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
+                console.warn("Firebase config is missing. Using mock data.");
+                initializeAppWithMockData();
+            } else {
+                firebase.initializeApp(firebaseConfig);
+                initializeAppWithFirebase();
+            }
+            feather.replace(); // Initial icon render
+        });
     </script>
 </body>
 </html>
