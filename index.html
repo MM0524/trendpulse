@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrendPulse - Predict & Vote on Trends</title>
     
+    <!-- Embedded SVG Favicon to prevent 404 error -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23A100FF'/%3E%3Cpath d='M10 50 H30 L40 30 L60 70 L70 50 H90' stroke='%23FFFFFF' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -449,19 +452,21 @@
 
     <!-- JavaScript -->
     <script>
+        // --- FIX: Global variables are now declared at the top of the script ---
+        let auth, db, user, trendsUnsubscribe, userUnsubscribe;
+        let trendChart;
+        const VOTE_LIMIT_PER_DAY = 3;
+
         // --- Firebase Configuration ---
         // IMPORTANT: Replace this with your own Firebase project configuration.
-        // Go to your Firebase project > Project Settings > General > Your apps > SDK setup and configuration
-       const firebaseConfig = {
-            apiKey: "AIzaSyC0scCOzvM4AvS8CRy3iorhRmk9q4dttk",
-            authDomain: "your-trendpulse.firebaseapp.com",
-            projectId: "your-trendpulse",
-            storageBucket: "your-trendpulse.appspot.com",
-            messagingSenderId: "31150936873",
-            appId: "1:31150936873:web:77534b6d91f359383f118f",
-            measurementId: "G-ZK9PPWQWVY"
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
-
         
         // --- App Initialization ---
         // Check if Firebase config is provided
@@ -473,11 +478,6 @@
             firebase.initializeApp(firebaseConfig);
             initializeAppWithFirebase();
         }
-
-        // --- Global Variables ---
-        let auth, db, user, trendsUnsubscribe, userUnsubscribe;
-        let trendChart;
-        const VOTE_LIMIT_PER_DAY = 3;
 
         // --- DOM Elements ---
         const signInPrompt = document.getElementById('sign-in-prompt');
@@ -565,7 +565,7 @@
                     scales: {
                         x: {
                             beginAtZero: true,
-                            ticks: { color: 'var(--gray)', stepSize: 1 },
+                            ticks: { color: 'var(--gray)', stepSize: 1, precision: 0 },
                             grid: { color: 'rgba(255,255,255,0.1)'}
                         },
                         y: {
@@ -677,7 +677,6 @@
             trendsUnsubscribe = db.collection('trends').orderBy('voteCount', 'desc')
                 .onSnapshot(snapshot => {
                     const trends = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    // This is handled by the user data listener for better real-time updates
                     updateChart(trends);
                 }, error => {
                     console.error("Error fetching trends: ", error);
@@ -698,7 +697,7 @@
                 if (userData && userData.dailyVotes && userData.dailyVotes.date === today) {
                     userVotes = userData.dailyVotes.votedTrendIds || [];
                 } else {
-                    // Reset votes for a new day
+                    // Reset votes for a new day if date doesn't match
                     await userRef.set({ dailyVotes: { date: today, votedTrendIds: [] } }, { merge: true });
                 }
                 
@@ -764,12 +763,10 @@
                     const userDoc = await transaction.get(userRef);
                     let dailyVotes = userDoc.data()?.dailyVotes || { date: '', votedTrendIds: [] };
 
-                    // Check if date is not today, reset votes
                     if (dailyVotes.date !== today) {
                         dailyVotes = { date: today, votedTrendIds: [] };
                     }
                     
-                    // Check vote limit and if already voted for this trend
                     if (dailyVotes.votedTrendIds.length >= VOTE_LIMIT_PER_DAY) {
                         throw new Error("You have reached your daily vote limit.");
                     }
@@ -777,7 +774,6 @@
                         throw new Error("You have already voted for this trend today.");
                     }
                     
-                    // If all checks pass, proceed with vote
                     dailyVotes.votedTrendIds.push(trendId);
                     
                     transaction.update(trendRef, {
@@ -790,37 +786,29 @@
             } catch (error) {
                 console.error('Vote failed:', error);
                 showToast(error.message, true);
-                // The user data listener will re-render buttons, so we don't need to re-enable it manually
             }
         }
 
         // --- Mock Data Functions (for when Firebase config is missing) ---
         function initializeAppWithMockData() {
             const mockTrends = [
-                { id: '1', title: 'Decentralized Social Media', description: 'Social platforms built on blockchain, giving users control over their data.', tags: ['web3', 'social'], creatorName: 'Alice', createdAt: new Date(), voteCount: 42 },
-                { id: '2', title: 'Hyper-Personalized AI Tutors', description: 'AI that adapts to individual learning styles in real-time.', tags: ['ai', 'education'], creatorName: 'Bob', createdAt: new Date(), voteCount: 28 },
-                { id: '3', title: 'Sustainable Tech Gadgets', description: 'Electronics made from recycled materials with a focus on repairability.', tags: ['sustainability', 'hardware'], creatorName: 'Charlie', createdAt: new Date(), voteCount: 15 },
+                { id: '1', title: 'Decentralized Social Media', description: 'Social platforms built on blockchain...', tags: ['web3', 'social'], creatorName: 'Alice', createdAt: new Date(), voteCount: 42 },
+                { id: '2', title: 'Hyper-Personalized AI Tutors', description: 'AI that adapts to individual learning styles...', tags: ['ai', 'education'], creatorName: 'Bob', createdAt: new Date(), voteCount: 28 },
+                { id: '3', title: 'Sustainable Tech Gadgets', description: 'Electronics made from recycled materials...', tags: ['sustainability', 'hardware'], creatorName: 'Charlie', createdAt: new Date(), voteCount: 15 },
             ];
-
-            // Mock date conversion for rendering
             mockTrends.forEach(t => t.createdAt = { toDate: () => t.createdAt });
-            
-            updateUIForSignOut = () => { /* no-op */ };
-            updateUIForSignIn = () => { /* no-op */ };
             
             document.addEventListener('DOMContentLoaded', () => {
                 signInPrompt.innerHTML = `<h2>Demo Mode</h2><p>Firebase configuration is missing. Displaying mock data. Functionality is disabled.</p>`;
                 appContent.classList.remove('hidden');
                 document.getElementById('auth-container').classList.add('hidden');
                 
-                // ---- FIX APPLIED HERE ----
-                // Use a more robust selector to hide the trend submission form in mock mode.
                 const formCard = document.getElementById('trend-form').closest('.section-card');
                 if (formCard) {
                     formCard.classList.add('hidden');
                 }
                 
-                renderTrends(mockTrends);
+                renderTrends(mockTrends, ['1']); // Mock: disable vote button for first item
                 initChart();
                 updateChart(mockTrends);
                 feather.replace();
