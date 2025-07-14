@@ -452,7 +452,7 @@
         let trendChart;
         const VOTE_LIMIT_PER_DAY = 3;
 
-        // --- DOM Elements (declared early) ---
+        // --- DOM Elements ---
         const signInPrompt = document.getElementById('sign-in-prompt');
         const appContent = document.getElementById('app-content');
         const authButton = document.getElementById('auth-button');
@@ -559,12 +559,16 @@
         }
 
         function renderTrends(trends, userVotes = []) {
-            if (trends.length === 0) {
+            if (!trends || trends.length === 0) {
                 trendsList.innerHTML = '<div class="empty-state">No trends yet. Be the first to add one!</div>';
                 return;
             }
             trendsList.innerHTML = '';
             trends.forEach(trend => {
+                // ---- FIX APPLIED HERE ----
+                // This handles both Firestore Timestamps (live) and JS Dates (mock)
+                const createdDate = trend.createdAt.toDate ? trend.createdAt.toDate() : trend.createdAt;
+
                 const trendCard = document.createElement('div');
                 trendCard.className = 'trend-card';
                 trendCard.innerHTML = `
@@ -572,7 +576,7 @@
                         <h3 class="trend-title">${trend.title}</h3>
                         <div class="trend-meta">
                             by ${trend.creatorName}<br>
-                            on ${trend.createdAt.toDate().toLocaleDateString()}
+                            on ${createdDate.toLocaleDateString()}
                         </div>
                     </div>
                     <p class="trend-description">${trend.description}</p>
@@ -719,11 +723,10 @@
 
         function initializeAppWithMockData() {
             const mockTrends = [
-                { id: '1', title: 'Decentralized Social Media', description: 'Social platforms built on blockchain...', tags: ['web3', 'social'], creatorName: 'Alice', createdAt: new Date(), voteCount: 42 },
-                { id: '2', title: 'Hyper-Personalized AI Tutors', description: 'AI that adapts to individual learning styles...', tags: ['ai', 'education'], creatorName: 'Bob', createdAt: new Date(), voteCount: 28 },
-                { id: '3', title: 'Sustainable Tech Gadgets', description: 'Electronics made from recycled materials...', tags: ['sustainability', 'hardware'], creatorName: 'Charlie', createdAt: new Date(), voteCount: 15 },
+                { id: '1', title: 'Decentralized Social Media', description: 'Social platforms built on blockchain...', tags: ['web3', 'social'], creatorName: 'Alice', createdAt: new Date(2023, 10, 15), voteCount: 42 },
+                { id: '2', title: 'Hyper-Personalized AI Tutors', description: 'AI that adapts to individual learning styles...', tags: ['ai', 'education'], creatorName: 'Bob', createdAt: new Date(2023, 10, 14), voteCount: 28 },
+                { id: '3', title: 'Sustainable Tech Gadgets', description: 'Electronics made from recycled materials...', tags: ['sustainability', 'hardware'], creatorName: 'Charlie', createdAt: new Date(2023, 10, 12), voteCount: 15 },
             ];
-            mockTrends.forEach(t => t.createdAt = { toDate: () => t.createdAt });
             signInPrompt.innerHTML = `<h2>Demo Mode</h2><p>Firebase configuration is missing. Displaying mock data. Functionality is disabled.</p>`;
             appContent.classList.remove('hidden');
             document.getElementById('auth-container').classList.add('hidden');
@@ -735,7 +738,6 @@
         }
 
         // --- APP ENTRY POINT ---
-        // FIX: All initialization logic is now safely wrapped in DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
             if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
                 console.warn("Firebase config is missing. Using mock data.");
