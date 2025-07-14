@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrendPulse - Predict & Vote on Trends</title>
     
-    <!-- Embedded SVG Favicon -->
+    <!-- Embedded SVG Favicon to prevent 404 error -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23A100FF'/%3E%3Cpath d='M10 50 H30 L40 30 L60 70 L70 50 H90' stroke='%23FFFFFF' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
     <!-- Google Fonts -->
@@ -22,14 +22,13 @@
             --light-navy: #1a1c3a;
             --gray: #8A8D9F;
             --error-red: #ff4757;
-            --header-height: 80px;
         }
 
-        html {
-            scroll-behavior: smooth;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Outfit', sans-serif;
@@ -39,15 +38,17 @@
             overflow-x: hidden;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .hidden { display: none !important; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-        /* --- Header & Navigation --- */
+        /* --- Header --- */
         header {
-            background: rgba(15, 16, 33, 0.85);
+            background: rgba(15, 16, 33, 0.8);
             backdrop-filter: blur(10px);
-            padding: 0;
-            height: var(--header-height);
+            padding: 20px 0;
             border-bottom: 1px solid var(--light-navy);
             position: sticky;
             top: 0;
@@ -58,133 +59,309 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 100%;
         }
 
-        .logo { font-size: 2rem; font-weight: 700; color: var(--neon-purple); text-decoration: none; }
-        .logo span { color: var(--white); font-weight: 400; }
-
-        .nav-links { display: flex; list-style: none; gap: 30px; }
-        .nav-links a { color: var(--gray); text-decoration: none; font-weight: 600; transition: color 0.3s; }
-        .nav-links a:hover, .nav-links a.active { color: var(--neon-purple); }
-
-        .nav-right { display: flex; align-items: center; gap: 20px; }
-
-        .hamburger { display: none; cursor: pointer; }
-        .hamburger .bar { display: block; width: 25px; height: 3px; margin: 5px auto; transition: all 0.3s ease-in-out; background-color: var(--white); }
-
-        @media(max-width: 992px) {
-            .nav-links {
-                position: fixed;
-                left: -100%;
-                top: var(--header-height);
-                gap: 0;
-                flex-direction: column;
-                background-color: var(--light-navy);
-                width: 100%;
-                text-align: center;
-                transition: 0.3s;
-                padding-bottom: 20px;
-                border-bottom: 1px solid #2a2d5a;
-            }
-            .nav-links li { padding: 15px 0; }
-            .nav-links.active { left: 0; }
-            .hamburger { display: block; }
-            .hamburger.active .bar:nth-child(2) { opacity: 0; }
-            .hamburger.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-            .hamburger.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--neon-purple);
+            text-decoration: none;
+        }
+        
+        .logo span {
+            color: var(--white);
+            font-weight: 400;
         }
 
         .auth-button {
-            display: flex; align-items: center; background-color: var(--neon-purple); color: var(--white); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background-color 0.3s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            background-color: var(--neon-purple);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
         }
-        .auth-button:hover { background-color: #8a00d9; transform: translateY(-2px); }
-        .auth-button .icon { margin-right: 8px; }
 
-        .user-profile { display: none; align-items: center; gap: 15px; }
-        .user-profile img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--neon-purple); }
+        .auth-button:hover {
+            background-color: #8a00d9;
+            transform: translateY(-2px);
+        }
+
+        .auth-button .icon {
+            margin-right: 8px;
+        }
+
+        .user-profile {
+            display: none; /* Hidden by default */
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-purple);
+        }
 
         /* --- Main Content --- */
-        main { padding: 40px 0; }
+        main {
+            padding: 40px 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .sign-in-prompt {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--light-navy);
+            border-radius: 12px;
+        }
+
+        .sign-in-prompt h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .app-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
         
-        .section-anchor { scroll-margin-top: calc(var(--header-height) + 20px); }
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
 
-        .sign-in-prompt { text-align: center; padding: 60px 20px; background: var(--light-navy); border-radius: 12px; }
-        .sign-in-prompt h2 { font-size: 2rem; margin-bottom: 10px; }
+        @media (min-width: 992px) {
+            .app-content {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
 
-        .app-content { display: grid; grid-template-columns: 1fr; gap: 40px; }
-        .column { display: flex; flex-direction: column; gap: 40px; }
-        @media (min-width: 992px) { .app-content { grid-template-columns: 2fr 1fr; } }
+        /* --- Section Styling --- */
+        .section-card {
+            background: var(--light-navy);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #2a2d5a;
+        }
 
-        .section-card { background: var(--light-navy); padding: 25px; border-radius: 12px; border: 1px solid #2a2d5a; }
-        .section-title { font-size: 1.8rem; font-weight: 600; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #2a2d5a; display: flex; align-items: center; gap: 10px; }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2a2d5a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
         /* --- Form --- */
-        .trend-form { display: flex; flex-direction: column; gap: 15px; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { margin-bottom: 5px; color: var(--gray); }
-        .form-group input, .form-group textarea { background: var(--dark-navy); border: 1px solid #2a2d5a; border-radius: 8px; padding: 12px; color: var(--white); font-size: 1rem; font-family: 'Outfit', sans-serif; }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--neon-purple); box-shadow: 0 0 0 3px rgba(161, 0, 255, 0.3); }
-        .form-group textarea { resize: vertical; min-height: 80px; }
-        .submit-btn { background: var(--neon-purple); color: var(--white); border: none; padding: 12px; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background-color 0.3s; }
-        .submit-btn:hover { background-color: #8a00d9; }
+        .trend-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-        /* --- Filter Bar --- */
-        .filter-bar {
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            color: var(--gray);
+        }
+
+        .form-group input, .form-group textarea {
+            background: var(--dark-navy);
+            border: 1px solid #2a2d5a;
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--white);
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 0 3px rgba(161, 0, 255, 0.3);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .submit-btn {
+            background: var(--neon-purple);
+            color: var(--white);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #8a00d9;
+        }
+
+        /* --- Trend List --- */
+        #trends-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .trend-card {
+            background: #1a1c3a;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid var(--neon-purple);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .trend-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .trend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .trend-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .trend-meta {
+            font-size: 0.85rem;
+            color: var(--gray);
+            text-align: right;
+        }
+
+        .trend-description {
+            color: var(--gray);
+        }
+        
+        .trend-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: var(--dark-navy);
+            color: var(--neon-purple);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .trend-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: var(--light-navy);
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #2a2d5a;
+            margin-top: 10px;
         }
-        .filter-text { font-weight: 600; }
-        .filter-text .tag { font-size: 1rem; padding: 5px 12px; }
-        .clear-filter-btn { background: none; border: 1px solid var(--gray); color: var(--gray); padding: 5px 10px; border-radius: 5px; cursor: pointer; transition: all 0.3s; }
-        .clear-filter-btn:hover { background-color: var(--gray); color: var(--dark-navy); }
 
-        /* --- Trend List --- */
-        #trends-list { display: flex; flex-direction: column; gap: 20px; }
+        .vote-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-        .trend-card-link { display: block; text-decoration: none; color: inherit; border-radius: 10px; transition: transform 0.2s, box-shadow 0.2s; }
-        .trend-card-link:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(161, 0, 255, 0.15); }
-        .trend-card { background: #1a1c3a; padding: 20px; border-left: 4px solid var(--neon-purple); display: flex; flex-direction: column; gap: 15px; border-radius: 10px; }
+        .vote-count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+        }
 
-        .trend-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
-        .trend-title { font-size: 1.5rem; font-weight: 600; }
-        .trend-meta { font-size: 0.85rem; color: var(--gray); text-align: right; }
-        .trend-description { color: var(--gray); }
-        .trend-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { background: var(--dark-navy); color: var(--neon-purple); padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: background-color 0.3s; }
-        a.tag:hover { background-color: var(--neon-purple); color: var(--white); }
+        .vote-btn {
+            background: transparent;
+            border: 2px solid var(--neon-purple);
+            color: var(--neon-purple);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
 
-        .trend-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .vote-section { display: flex; align-items: center; gap: 15px; }
-        .vote-count { font-size: 1.5rem; font-weight: 700; color: var(--white); }
-        .vote-btn { background: transparent; border: 2px solid var(--neon-purple); color: var(--neon-purple); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; z-index: 2; position: relative; }
-        .vote-btn:hover:not(:disabled) { background: var(--neon-purple); color: var(--white); }
-        .vote-btn:disabled { border-color: var(--gray); color: var(--gray); cursor: not-allowed; }
+        .vote-btn:hover:not(:disabled) {
+            background: var(--neon-purple);
+            color: var(--white);
+        }
+        
+        .vote-btn:disabled {
+            border-color: var(--gray);
+            color: var(--gray);
+            cursor: not-allowed;
+        }
         
         /* --- Chart / Leaderboard --- */
-        #chart-container { width: 100%; height: auto; }
-
-        /* --- Modal --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 16, 33, 0.7); backdrop-filter: blur(5px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-content { background: var(--light-navy); padding: 40px; border-radius: 12px; max-width: 600px; width: 90%; position: relative; border: 1px solid #2a2d5a; transform: scale(0.9); transition: transform 0.3s; }
-        .modal-overlay.active .modal-content { transform: scale(1); }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--white); font-size: 2rem; cursor: pointer; }
-        .modal-content h2 { color: var(--neon-purple); margin-bottom: 15px; }
-        .modal-content p { margin-bottom: 10px; color: var(--gray); }
-        .modal-content a { color: var(--neon-purple); text-decoration: none; }
+        #chart-container {
+            width: 100%;
+            height: auto;
+        }
 
         /* --- General UI --- */
-        .loading-spinner, .empty-state { text-align: center; padding: 40px; color: var(--gray); }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: var(--light-navy); color: var(--white); padding: 15px 25px; border-radius: 8px; z-index: 1001; box-shadow: 0 5px 15px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.5s, bottom 0.5s; border-left: 4px solid var(--neon-purple); }
-        .toast.show { opacity: 1; bottom: 30px; }
-        .toast.error { border-left-color: var(--error-red); }
+        .loading-spinner, .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+        
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--light-navy);
+            color: var(--white);
+            padding: 15px 25px;
+            border-radius: 8px;
+            z-index: 1001;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.5s, bottom 0.5s;
+            border-left: 4px solid var(--neon-purple);
+        }
+        
+        .toast.show {
+            opacity: 1;
+            bottom: 30px;
+        }
+
+        .toast.error {
+            border-left-color: var(--error-red);
+        }
 
     </style>
 </head>
@@ -192,28 +369,18 @@
 
     <header>
         <nav class="container">
-            <a href="?" class="logo">Trend<span>Pulse</span></a>
-            <ul class="nav-links" id="nav-links">
-                <li><a href="#trends-section">Top Trends</a></li>
-                <li><a href="#submit-section">Submit a Trend</a></li>
-                <li><a href="#" id="about-link">About</a></li>
-            </ul>
-            <div class="nav-right">
-                <div id="auth-container">
-                    <button id="auth-button" class="auth-button">
-                        <span class="icon" data-feather="log-in"></span>
-                        Sign In
+            <a href="#" class="logo">Trend<span>Pulse</span></a>
+            <div id="auth-container">
+                <button id="auth-button" class="auth-button">
+                    <span class="icon" data-feather="log-in"></span>
+                    Sign In with Google
+                </button>
+                <div id="user-profile" class="user-profile">
+                    <span id="user-name"></span>
+                    <img id="user-pic" src="" alt="User profile picture">
+                    <button id="signout-button" class="auth-button">
+                        <span class="icon" data-feather="log-out"></span>
                     </button>
-                    <div id="user-profile" class="user-profile">
-                        <span id="user-name"></span>
-                        <img id="user-pic" src="" alt="User profile picture">
-                        <button id="signout-button" class="auth-button" title="Sign Out">
-                            <span class="icon" data-feather="log-out"></span>
-                        </button>
-                    </div>
-                </div>
-                <div class="hamburger" id="hamburger">
-                    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
                 </div>
             </div>
         </nav>
@@ -228,7 +395,7 @@
         <div id="app-content" class="app-content hidden">
             <div class="column">
                 <!-- Trend Submission Form -->
-                <div id="submit-section" class="section-card section-anchor">
+                <div class="section-card">
                     <h2 class="section-title"><span data-feather="plus-circle"></span>Submit a New Trend</h2>
                     <form id="trend-form" class="trend-form">
                         <div class="form-group">
@@ -240,11 +407,7 @@
                             <textarea id="trend-description" placeholder="Explain why you think this is a growing trend." required></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="trend-source">Source URL (Link to article, tweet, etc.)</label>
-                            <input type="url" id="trend-source" placeholder="https://example.com/article" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="trend-tags">Tags (comma-separated, no #)</label>
+                            <label for="trend-tags">Tags (comma-separated)</label>
                             <input type="text" id="trend-tags" placeholder="e.g., tech, ai, marketing">
                         </div>
                         <button type="submit" class="submit-btn">Pulse It!</button>
@@ -252,9 +415,8 @@
                 </div>
 
                 <!-- Trends List -->
-                <div id="trends-section" class="section-card section-anchor">
+                <div class="section-card">
                      <h2 class="section-title"><span data-feather="zap"></span>Trending Now</h2>
-                     <div id="filter-bar-container"></div>
                     <div id="trends-list">
                         <div class="loading-spinner">Loading trends...</div>
                     </div>
@@ -273,19 +435,6 @@
             </div>
         </div>
     </main>
-
-    <!-- About Modal -->
-    <div class="modal-overlay" id="about-modal">
-        <div class="modal-content">
-            <button class="modal-close" id="modal-close-btn">×</button>
-            <h2>About TrendPulse</h2>
-            <p>TrendPulse is a crowdsourced platform to predict and vote on emerging trends in technology, culture, and beyond.</p>
-            <p><strong>How it works:</strong></p>
-            <p>1. <strong>Submit:</strong> Find something you think is the next big thing? Submit it with a source link.</p>
-            <p>2. <strong>Vote:</strong> Browse the trends and cast your vote on the ones you believe in. You get 3 votes per day!</p>
-            <p>3. <strong>Discover:</strong> See what the community thinks is on the rise through our real-time leaderboard.</p>
-        </div>
-    </div>
     
     <div id="toast" class="toast"></div>
 
@@ -314,12 +463,6 @@
         const trendForm = document.getElementById('trend-form');
         const trendsList = document.getElementById('trends-list');
         const userVoteInfo = document.getElementById('user-vote-info');
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('nav-links');
-        const aboutLink = document.getElementById('about-link');
-        const aboutModal = document.getElementById('about-modal');
-        const modalCloseBtn = document.getElementById('modal-close-btn');
-        const filterBarContainer = document.getElementById('filter-bar-container');
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
@@ -331,106 +474,172 @@
             appId: "YOUR_APP_ID"
         };
         
-        // --- ALL FUNCTIONS ---
-        function showToast(message, isError = false) { /* ... same as before ... */ }
-        function updateUIForSignIn(currentUser) { /* ... same as before ... */ }
-        function updateUIForSignOut() { /* ... same as before ... */ }
-        function clearChart() { /* ... same as before ... */ }
-        function getTodayDateString() { /* ... same as before ... */ }
-        function initChart() { /* ... same as before ... */ }
-        function updateChart(trends) { /* ... same as before ... */ }
+        // --- ALL FUNCTIONS ARE DEFINED HERE ---
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            if (isError) toast.classList.add('error');
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
+        }
+
+        function updateUIForSignIn(currentUser) {
+            user = currentUser;
+            signInPrompt.classList.add('hidden');
+            appContent.classList.remove('hidden');
+            authButton.classList.add('hidden');
+            userProfile.style.display = 'flex';
+            userNameEl.textContent = user.displayName;
+            userPicEl.src = user.photoURL;
+        }
+
+        function updateUIForSignOut() {
+            user = null;
+            signInPrompt.classList.remove('hidden');
+            appContent.classList.add('hidden');
+            authButton.classList.remove('hidden');
+            userProfile.style.display = 'none';
+            if (trendsUnsubscribe) trendsUnsubscribe();
+            if (userUnsubscribe) userUnsubscribe();
+            trendsList.innerHTML = '<div class="loading-spinner">Sign in to see trends.</div>';
+            clearChart();
+        }
+
+        function clearChart() {
+            if (trendChart) {
+                trendChart.data.labels = [];
+                trendChart.data.datasets[0].data = [];
+                trendChart.update();
+            }
+        }
         
-        // --- REWRITTEN/NEW FUNCTIONS ---
+        function getTodayDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('trends-chart').getContext('2d');
+            trendChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Votes',
+                        data: [],
+                        backgroundColor: 'rgba(161, 0, 255, 0.6)',
+                        borderColor: 'rgba(161, 0, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { beginAtZero: true, ticks: { color: 'var(--gray)', precision: 0 }, grid: { color: 'rgba(255,255,255,0.1)'}},
+                        y: { ticks: { color: 'var(--white)' }, grid: { display: false }}
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        
+        function updateChart(trends) {
+            if (!trendChart) initChart();
+            const topTrends = trends.slice(0, 7).reverse();
+            trendChart.data.labels = topTrends.map(t => t.title.length > 25 ? t.title.substring(0, 22) + '...' : t.title);
+            trendChart.data.datasets[0].data = topTrends.map(t => t.voteCount);
+            trendChart.update();
+        }
+
         function renderTrends(trends, userVotes = []) {
             if (!trends || trends.length === 0) {
-                trendsList.innerHTML = '<div class="empty-state">No trends found. Try clearing the filter or be the first to add one!</div>';
+                trendsList.innerHTML = '<div class="empty-state">No trends yet. Be the first to add one!</div>';
                 return;
             }
             trendsList.innerHTML = '';
             trends.forEach(trend => {
-                const createdDate = trend.createdAt?.toDate ? trend.createdAt.toDate() : trend.createdAt;
-                const cardLink = document.createElement('a');
-                cardLink.className = 'trend-card-link';
-                cardLink.href = trend.sourceUrl || '#';
-                if(trend.sourceUrl) cardLink.target = '_blank';
-                cardLink.rel = 'noopener noreferrer';
-                
-                // Prevent click on link when vote button is clicked
-                cardLink.addEventListener('click', (e) => {
-                    if (e.target.closest('.vote-btn')) {
-                        e.preventDefault();
-                    }
-                });
+                // ---- FIX APPLIED HERE ----
+                // This handles both Firestore Timestamps (live) and JS Dates (mock)
+                const createdDate = trend.createdAt.toDate ? trend.createdAt.toDate() : trend.createdAt;
 
-                cardLink.innerHTML = `
-                    <div class="trend-card">
-                        <div class="trend-header">
-                            <h3 class="trend-title">${trend.title}</h3>
-                            <div class="trend-meta">
-                                by ${trend.creatorName}<br>
-                                on ${createdDate.toLocaleDateString()}
-                            </div>
-                        </div>
-                        <p class="trend-description">${trend.description}</p>
-                        <div class="trend-tags">
-                            ${trend.tags.map(tag => `<a href="?tag=${tag}" class="tag">${tag}</a>`).join('')}
-                        </div>
-                        <div class="trend-footer">
-                            <div class="vote-section">
-                                <span class="vote-count">${trend.voteCount}</span>
-                                <span>Votes</span>
-                            </div>
-                            <button class="vote-btn" data-id="${trend.id}" ${userVotes.includes(trend.id) ? 'disabled' : ''}>
-                                <span data-feather="arrow-up-circle"></span> Vote
-                            </button>
+                const trendCard = document.createElement('div');
+                trendCard.className = 'trend-card';
+                trendCard.innerHTML = `
+                    <div class="trend-header">
+                        <h3 class="trend-title">${trend.title}</h3>
+                        <div class="trend-meta">
+                            by ${trend.creatorName}<br>
+                            on ${createdDate.toLocaleDateString()}
                         </div>
                     </div>
+                    <p class="trend-description">${trend.description}</p>
+                    <div class="trend-tags">
+                        ${trend.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="trend-footer">
+                        <div class="vote-section">
+                            <span class="vote-count">${trend.voteCount}</span>
+                            <span>Votes</span>
+                        </div>
+                        <button class="vote-btn" data-id="${trend.id}" ${userVotes.includes(trend.id) ? 'disabled' : ''}>
+                            <span data-feather="arrow-up-circle"></span> Vote
+                        </button>
+                    </div>
                 `;
-                trendsList.appendChild(cardLink);
+                trendsList.appendChild(trendCard);
             });
             feather.replace();
         }
-
-        async function handleTrendSubmit(e) {
-            e.preventDefault();
-            const title = document.getElementById('trend-title').value.trim();
-            const description = document.getElementById('trend-description').value.trim();
-            const sourceUrl = document.getElementById('trend-source').value.trim();
-            const tagsRaw = document.getElementById('trend-tags').value.trim();
-            
-            if (!title || !description || !sourceUrl) {
-                showToast('Title, description, and source URL are required.', true);
-                return;
-            }
-
-            try {
-                new URL(sourceUrl); // Validate URL format
-            } catch (_) {
-                showToast('Please enter a valid source URL.', true);
-                return;
-            }
-
-            const tags = tagsRaw ? tagsRaw.split(',').map(tag => tag.trim().toLowerCase().replace(/[^a-z0-9]/gi, '')).filter(Boolean) : [];
-
-            try {
-                await db.collection('trends').add({ title, description, sourceUrl, tags, creatorName: user.displayName, creatorUid: user.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp(), voteCount: 0 });
-                showToast('Trend submitted successfully!');
-                trendForm.reset();
-            } catch (error) {
-                console.error("Error adding document: ", error);
-                showToast('Failed to submit trend.', true);
-            }
+        
+        function initializeAppWithFirebase() {
+            auth = firebase.auth();
+            db = firebase.firestore();
+            auth.onAuthStateChanged(currentUser => {
+                if (currentUser) {
+                    updateUIForSignIn(currentUser);
+                    fetchAndRenderTrends();
+                    listenToUserData();
+                } else {
+                    updateUIForSignOut();
+                }
+            });
+            authButton.addEventListener('click', signInWithGoogle);
+            signOutButton.addEventListener('click', signOut);
+            trendForm.addEventListener('submit', handleTrendSubmit);
+            trendsList.addEventListener('click', (e) => {
+                const voteButton = e.target.closest('.vote-btn');
+                if(voteButton) {
+                    handleVote(voteButton);
+                }
+            });
+            initChart();
         }
 
-        function fetchAndRenderTrends(tagFilter = null) {
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(error => {
+                console.error("Authentication Error:", error);
+                showToast(`Error: ${error.message}`, true);
+            });
+        }
+
+        function signOut() {
+            auth.signOut().catch(error => {
+                console.error("Sign Out Error:", error);
+                showToast(`Error: ${error.message}`, true);
+            });
+        }
+
+        function fetchAndRenderTrends() {
             trendsList.innerHTML = '<div class="loading-spinner">Loading trends...</div>';
-            let query = db.collection('trends');
-            
-            if (tagFilter) {
-                query = query.where('tags', 'array-contains', tagFilter);
-            }
-            
-            trendsUnsubscribe = query.orderBy('voteCount', 'desc')
+            trendsUnsubscribe = db.collection('trends').orderBy('voteCount', 'desc')
                 .onSnapshot(snapshot => {
                     const trends = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     updateChart(trends);
@@ -441,7 +650,7 @@
                 });
         }
 
-        function listenToUserData(tagFilter = null) {
+        function listenToUserData() {
             if (userUnsubscribe) userUnsubscribe();
             const userRef = db.collection('users').doc(user.uid);
             userUnsubscribe = userRef.onSnapshot(async userDoc => {
@@ -455,125 +664,90 @@
                 }
                 const votesLeft = VOTE_LIMIT_PER_DAY - userVotes.length;
                 userVoteInfo.textContent = `You have ${votesLeft} vote${votesLeft !== 1 ? 's' : ''} left for today.`;
-                
-                let query = db.collection('trends');
-                if (tagFilter) {
-                    query = query.where('tags', 'array-contains', tagFilter);
-                }
-                const trendsSnapshot = await query.orderBy('voteCount', 'desc').get();
+                const trendsSnapshot = await db.collection('trends').orderBy('voteCount', 'desc').get();
                 const trends = trendsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderTrends(trends, userVotes);
-
             }, error => {
                 console.error("Error listening to user data:", error);
                 showToast("Could not sync user vote data.", true);
             });
         }
-
-        function initializeAppWithFirebase(tagFilter = null) {
-            auth = firebase.auth();
-            db = firebase.firestore();
-            auth.onAuthStateChanged(currentUser => {
-                if (currentUser) {
-                    updateUIForSignIn(currentUser);
-                    fetchAndRenderTrends(tagFilter);
-                    listenToUserData(tagFilter);
-                } else {
-                    updateUIForSignOut();
-                }
-            });
-            initChart();
+        
+        async function handleTrendSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('trend-title').value.trim();
+            const description = document.getElementById('trend-description').value.trim();
+            const tagsRaw = document.getElementById('trend-tags').value.trim();
+            if (!title || !description) {
+                showToast('Title and description are required.', true);
+                return;
+            }
+            const tags = tagsRaw ? tagsRaw.split(',').map(tag => tag.trim()).filter(Boolean) : [];
+            try {
+                await db.collection('trends').add({ title, description, tags, creatorName: user.displayName, creatorUid: user.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp(), voteCount: 0 });
+                showToast('Trend submitted successfully!');
+                trendForm.reset();
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                showToast('Failed to submit trend.', true);
+            }
+        }
+        
+        async function handleVote(button) {
+            if (!user) {
+                showToast('You must be signed in to vote.', true);
+                return;
+            }
+            button.disabled = true;
+            const trendId = button.dataset.id;
+            const userRef = db.collection('users').doc(user.uid);
+            const trendRef = db.collection('trends').doc(trendId);
+            const today = getTodayDateString();
+            try {
+                await db.runTransaction(async (transaction) => {
+                    const userDoc = await transaction.get(userRef);
+                    let dailyVotes = userDoc.data()?.dailyVotes || { date: '', votedTrendIds: [] };
+                    if (dailyVotes.date !== today) dailyVotes = { date: today, votedTrendIds: [] };
+                    if (dailyVotes.votedTrendIds.length >= VOTE_LIMIT_PER_DAY) throw new Error("You have reached your daily vote limit.");
+                    if (dailyVotes.votedTrendIds.includes(trendId)) throw new Error("You have already voted for this trend today.");
+                    dailyVotes.votedTrendIds.push(trendId);
+                    transaction.update(trendRef, { voteCount: firebase.firestore.FieldValue.increment(1) });
+                    transaction.set(userRef, { dailyVotes }, { merge: true });
+                });
+                showToast('Vote counted!');
+            } catch (error) {
+                console.error('Vote failed:', error);
+                showToast(error.message, true);
+            }
         }
 
-        function initializeAppWithMockData(tagFilter = null) {
-            let mockTrends = [
-                { id: '1', title: 'Decentralized Social Media', description: 'Social platforms built on blockchain...', tags: ['web3', 'social'], creatorName: 'Alice', createdAt: new Date(), voteCount: 42, sourceUrl: 'https://example.com' },
-                { id: '2', title: 'Hyper-Personalized AI Tutors', description: 'AI that adapts to individual learning styles...', tags: ['ai', 'education'], creatorName: 'Bob', createdAt: new Date(), voteCount: 28, sourceUrl: 'https://example.com' },
-                { id: '3', title: 'Sustainable Tech Gadgets', description: 'Electronics made from recycled materials...', tags: ['sustainability', 'hardware', 'ai'], creatorName: 'Charlie', createdAt: new Date(), voteCount: 15, sourceUrl: 'https://example.com' },
+        function initializeAppWithMockData() {
+            const mockTrends = [
+                { id: '1', title: 'Decentralized Social Media', description: 'Social platforms built on blockchain...', tags: ['web3', 'social'], creatorName: 'Alice', createdAt: new Date(2023, 10, 15), voteCount: 42 },
+                { id: '2', title: 'Hyper-Personalized AI Tutors', description: 'AI that adapts to individual learning styles...', tags: ['ai', 'education'], creatorName: 'Bob', createdAt: new Date(2023, 10, 14), voteCount: 28 },
+                { id: '3', title: 'Sustainable Tech Gadgets', description: 'Electronics made from recycled materials...', tags: ['sustainability', 'hardware'], creatorName: 'Charlie', createdAt: new Date(2023, 10, 12), voteCount: 15 },
             ];
-
-            if (tagFilter) {
-                mockTrends = mockTrends.filter(t => t.tags.includes(tagFilter));
-            }
-            
-            signInPrompt.innerHTML = `<h2>Demo Mode</h2><p>Firebase configuration is missing. Displaying mock data.</p>`;
+            signInPrompt.innerHTML = `<h2>Demo Mode</h2><p>Firebase configuration is missing. Displaying mock data. Functionality is disabled.</p>`;
             appContent.classList.remove('hidden');
             document.getElementById('auth-container').classList.add('hidden');
-            document.getElementById('submit-section').classList.add('hidden');
+            const formCard = document.getElementById('trend-form').closest('.section-card');
+            if (formCard) formCard.classList.add('hidden');
             renderTrends(mockTrends, ['1']);
             initChart();
             updateChart(mockTrends);
         }
 
-        function handleFilterBar(tagFilter) {
-            if(tagFilter) {
-                filterBarContainer.innerHTML = `
-                    <div class="filter-bar">
-                        <span class="filter-text">Filtering by: <span class="tag">${tagFilter}</span></span>
-                        <a href="?" class="clear-filter-btn">Clear Filter</a>
-                    </div>
-                `;
-            } else {
-                filterBarContainer.innerHTML = '';
-            }
-        }
-        
         // --- APP ENTRY POINT ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Setup mobile nav
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                navLinks.classList.toggle('active');
-            });
-            document.querySelectorAll('.nav-links li a').forEach(link => {
-                link.addEventListener('click', () => {
-                    hamburger.classList.remove('active');
-                    navLinks.classList.remove('active');
-                });
-            });
-
-            // Setup About Modal
-            aboutLink.addEventListener('click', (e) => { e.preventDefault(); aboutModal.classList.add('active'); });
-            modalCloseBtn.addEventListener('click', () => aboutModal.classList.remove('active'));
-            aboutModal.addEventListener('click', (e) => { if(e.target === aboutModal) aboutModal.classList.remove('active'); });
-            
-            // Check for tag filter in URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const tagFilter = urlParams.get('tag');
-            handleFilterBar(tagFilter);
-
-            // Initialize app
             if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
                 console.warn("Firebase config is missing. Using mock data.");
-                initializeAppWithMockData(tagFilter);
+                initializeAppWithMockData();
             } else {
                 firebase.initializeApp(firebaseConfig);
-                initializeAppWithFirebase(tagFilter);
+                initializeAppWithFirebase();
             }
-            
-            // Re-initialize event listeners that depend on auth state
-            authButton.addEventListener('click', signInWithGoogle);
-            signOutButton.addEventListener('click', signOut);
-            trendForm.addEventListener('submit', handleTrendSubmit);
-            trendsList.addEventListener('click', (e) => {
-                const voteButton = e.target.closest('.vote-btn');
-                if (voteButton) handleVote(voteButton);
-            });
-            
-            feather.replace();
+            feather.replace(); // Initial icon render
         });
-
-        // Functions that were unchanged from previous version
-        function signInWithGoogle() { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).catch(error => { console.error("Authentication Error:", error); showToast(`Error: ${error.message}`, true); }); }
-        function signOut() { auth.signOut().catch(error => { console.error("Sign Out Error:", error); showToast(`Error: ${error.message}`, true); }); }
-        showToast = (message, isError = false) => { const toast = document.getElementById('toast'); toast.textContent = message; toast.className = 'toast show'; if (isError) toast.classList.add('error'); setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000); };
-        updateUIForSignIn = (currentUser) => { user = currentUser; signInPrompt.classList.add('hidden'); appContent.classList.remove('hidden'); authButton.classList.add('hidden'); userProfile.style.display = 'flex'; userNameEl.textContent = user.displayName; userPicEl.src = user.photoURL; };
-        updateUIForSignOut = () => { user = null; signInPrompt.classList.remove('hidden'); appContent.classList.add('hidden'); authButton.classList.remove('hidden'); userProfile.style.display = 'none'; if (trendsUnsubscribe) trendsUnsubscribe(); if (userUnsubscribe) userUnsubscribe(); trendsList.innerHTML = '<div class="loading-spinner">Sign in to see trends.</div>'; clearChart(); };
-        clearChart = () => { if (trendChart) { trendChart.data.labels = []; trendChart.data.datasets[0].data = []; trendChart.update(); } };
-        getTodayDateString = () => { const today = new Date(); return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`; };
-        initChart = () => { const ctx = document.getElementById('trends-chart').getContext('2d'); trendChart = new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [{ label: 'Votes', data: [], backgroundColor: 'rgba(161, 0, 255, 0.6)', borderColor: 'rgba(161, 0, 255, 1)', borderWidth: 1 }] }, options: { responsive: true, indexAxis: 'y', scales: { x: { beginAtZero: true, ticks: { color: 'var(--gray)', precision: 0 }, grid: { color: 'rgba(255,255,255,0.1)' } }, y: { ticks: { color: 'var(--white)' }, grid: { display: false } } }, plugins: { legend: { display: false } } } }); };
-        updateChart = (trends) => { if (!trendChart) initChart(); const topTrends = trends.slice(0, 7).reverse(); trendChart.data.labels = topTrends.map(t => t.title.length > 25 ? t.title.substring(0, 22) + '...' : t.title); trendChart.data.datasets[0].data = topTrends.map(t => t.voteCount); trendChart.update(); };
-        async function handleVote(button) { if (!user) { showToast('You must be signed in to vote.', true); return; } button.disabled = true; const trendId = button.dataset.id; const userRef = db.collection('users').doc(user.uid); const trendRef = db.collection('trends').doc(trendId); const today = getTodayDateString(); try { await db.runTransaction(async (transaction) => { const userDoc = await transaction.get(userRef); let dailyVotes = userDoc.data()?.dailyVotes || { date: '', votedTrendIds: [] }; if (dailyVotes.date !== today) dailyVotes = { date: today, votedTrendIds: [] }; if (dailyVotes.votedTrendIds.length >= VOTE_LIMIT_PER_DAY) throw new Error("You have reached your daily vote limit."); if (dailyVotes.votedTrendIds.includes(trendId)) throw new Error("You have already voted for this trend today."); dailyVotes.votedTrendIds.push(trendId); transaction.update(trendRef, { voteCount: firebase.firestore.FieldValue.increment(1) }); transaction.set(userRef, { dailyVotes }, { merge: true }); }); showToast('Vote counted!'); } catch (error) { console.error('Vote failed:', error); showToast(error.message, true); } }
     </script>
 </body>
 </html>
