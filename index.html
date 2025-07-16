@@ -13,8 +13,7 @@
     <style>
         :root {
             --dark-navy: #0F1021; --neon-purple: #A100FF; --white: #F5F5F5; --light-navy: #1a1c3a; --gray: #8A8D9F; --error-red: #ff4757; --header-height: 80px;
-            --accent-purple: #a855f7;
-            --accent-purple-hover: #c084fc;
+            --accent-purple: #a855f7; --accent-purple-hover: #c084fc;
         }
         html { scroll-behavior: smooth; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -48,8 +47,8 @@
         .category-filter-btn { background: var(--dark-navy); color: var(--gray); border: 1px solid #2a2d5a; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
         .category-filter-btn:hover { border-color: var(--neon-purple); color: var(--neon-purple); }
         .category-filter-btn.active { background: var(--neon-purple); color: var(--white); border-color: var(--neon-purple); }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; background: var(--dark-navy); border: 1px solid #2a2d5a; border-radius: 8px; padding: 12px; color: var(--white); font-size: 1rem; font-family: 'Outfit', sans-serif; }
         .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; background: var(--dark-navy); border: 1px solid #2a2d5a; border-radius: 8px; padding: 12px; color: var(--white); font-size: 1rem; font-family: 'Outfit', sans-serif; }
         .trend-card-link { display: block; text-decoration: none; color: inherit; border-radius: 10px; transition: transform 0.2s, box-shadow 0.2s; }
         .trend-card-link:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(161, 0, 255, 0.15); }
         .trend-card { background: #1a1c3a; padding: 20px; border-left: 4px solid var(--neon-purple); display: flex; flex-direction: column; gap: 15px; border-radius: 10px; margin-bottom: 20px; }
@@ -111,11 +110,7 @@
     </header>
 
     <main class="container">
-        <div id="sign-in-prompt" class="sign-in-prompt">
-            <h2>Welcome to TrendPulse</h2>
-            <p>Sign in to predict, vote, and see what's next.</p>
-        </div>
-
+        <div id="sign-in-prompt" class="sign-in-prompt"><h2>Welcome to TrendPulse</h2><p>Sign in to predict, vote, and see what's next.</p></div>
         <div id="app-content" class="app-content hidden">
             <div class="column-1">
                 <div id="submit-section" class="section-card section-anchor">
@@ -124,15 +119,12 @@
                         <div class="form-group"><input type="text" id="trend-title" placeholder="Trend Title" required></div>
                         <div class="form-group"><textarea id="trend-description" placeholder="Why is this a growing trend?" required></textarea></div>
                         <div class="form-group"><input type="url" id="trend-source" placeholder="https://example.com/source-article" required></div>
-                        <div class="form-group">
-                            <select id="trend-category" required><option value="">Select a Category...</option></select>
-                        </div>
+                        <div class="form-group"><select id="trend-category" required><option value="">Select a Category...</option></select></div>
                         <div class="form-group"><input type="text" id="trend-tags" placeholder="Tags (comma-separated, e.g. ai, web3)"></div>
                         <button type="submit" class="auth-button" style="width: 100%; justify-content: center;">Pulse It!</button>
                     </form>
                 </div>
             </div>
-
             <div class="column-2">
                 <div id="trends-section" class="section-card section-anchor">
                      <h2 class="section-title"><span data-feather="zap"></span>Trending Now</h2>
@@ -144,28 +136,14 @@
         </div>
     </main>
 
-    <!-- Modals -->
-    <div class="modal-overlay" id="about-modal">
-        <div class="modal-content"><button class="modal-close">×</button><h2>About TrendPulse</h2><p>A crowdsourced platform to predict and vote on emerging trends in technology, culture, and beyond.</p></div>
-    </div>
-    <div class="modal-overlay" id="signin-modal">
-        <div class="modal-content">
-            <button class="modal-close">×</button><h2>Join TrendPulse</h2>
-            <div class="signin-options">
-                <button class="signin-btn" id="google-signin-btn"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/><path fill="none" d="M1 1h22v22H1z"/></svg>Sign in with Google</button>
-                <button class="signin-btn" id="microsoft-signin-btn"><svg viewBox="0 0 24 24"><path fill="#F25022" d="M11.25 2.75H2.75v8.5h8.5v-8.5z"/><path fill="#00A4EF" d="M21.25 12.75h-8.5v8.5h8.5v-8.5z"/><path fill="#7FBA00" d="M11.25 12.75H2.75v8.5h8.5v-8.5z"/><path fill="#FFB900" d="M21.25 2.75h-8.5v8.5h8.5v-8.5z"/></svg>Sign in with Work/School</button>
-            </div>
-        </div>
-    </div>
-    <div class="modal-overlay" id="trending-board-modal">
-        <div class="modal-content"><button class="modal-close">×</button><h2>Premium Access Required</h2><p style="margin-bottom: 25px; color: var(--gray);">Please sign in with a company or school email to view the Trending Board.</p><button class="auth-button" id="modal-signin-btn" style="width: 100%; justify-content: center;">Sign In</button></div>
-    </div>
+    <div class="modal-overlay" id="about-modal"><div class="modal-content"><button class="modal-close">×</button><h2>About TrendPulse</h2><p>A crowdsourced platform to predict and vote on emerging trends in technology, culture, and beyond.</p></div></div>
+    <div class="modal-overlay" id="signin-modal"><div class="modal-content"><button class="modal-close">×</button><h2>Join TrendPulse</h2><div class="signin-options"><button class="signin-btn" id="google-signin-btn"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/><path fill="none" d="M1 1h22v22H1z"/></svg>Sign in with Google</button><button class="signin-btn" id="microsoft-signin-btn"><svg viewBox="0 0 24 24"><path fill="#F25022" d="M11.25 2.75H2.75v8.5h8.5v-8.5z"/><path fill="#00A4EF" d="M21.25 12.75h-8.5v8.5h8.5v-8.5z"/><path fill="#7FBA00" d="M11.25 12.75H2.75v8.5h8.5v-8.5z"/><path fill="#FFB900" d="M21.25 2.75h-8.5v8.5h8.5v-8.5z"/></svg>Sign in with Work/School</button></div></div></div>
+    <div class="modal-overlay" id="trending-board-modal"><div class="modal-content"><button class="modal-close">×</button><h2>Premium Access Required</h2><p style="margin-bottom: 25px; color: var(--gray);">Please sign in with a company or school email to view the Trending Board.</p><button class="auth-button" id="modal-signin-btn" style="width: 100%; justify-content: center;">Sign In</button></div></div>
     <div id="toast"></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
     <script>
@@ -174,12 +152,12 @@
         let lastVisibleDoc = null, isFetching = false, currentCategory = 'All';
         const TRENDS_PER_PAGE = 5;
         const CATEGORIES = ['All', 'Technology', 'Fashion', 'Climate', 'Gaming', 'Education', 'Design'];
-        const firebaseConfig = { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID" /* ... */ };
+        const firebaseConfig = { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID", storageBucket: "YOUR_STORAGE_BUCKET", messagingSenderId: "YOUR_MESSAGING_SENDER_ID", appId: "YOUR_APP_ID" };
         const seedTrends = [{ title: 'AI-Generated Game Assets', description: 'Artists and developers use AI to rapidly create textures, models, and environments.', category: 'Gaming', tags: ['ai', 'gamedev'], sourceUrl: 'https://example.com' }, { title: 'Hyper-Personalized Education Paths', description: 'AI tutors that adapt curricula in real-time to a student\'s learning pace and style.', category: 'Education', tags: ['ai', 'learning'], sourceUrl: 'https://example.com' }, { title: 'Circular Fashion Economy', description: 'Brands focusing on recycling, upcycling, and clothing rental services to reduce waste.', category: 'Fashion', tags: ['sustainability', 'clothing'], sourceUrl: 'https://example.com' }, { title: 'Direct Air Capture (DAC)', description: 'Technologies that pull CO2 directly from the atmosphere are becoming more viable.', category: 'Climate', tags: ['carbon', 'cleantech'], sourceUrl: 'https://example.com' }, { title: 'The Revival of Brutalism in Web Design', description: 'A raw, minimalist web design trend focusing on function over form.', category: 'Design', tags: ['webdesign', 'uiux'], sourceUrl: 'https://example.com' }, { title: 'Quantum Computing Accessibility', description: 'Cloud platforms are making quantum computers available to researchers and businesses.', category: 'Technology', tags: ['quantum', 'cloud'], sourceUrl: 'https://example.com' }, { title: 'Gamified Climate Action Apps', description: 'Mobile apps that reward users for sustainable actions, like reducing their carbon footprint.', category: 'Gaming', tags: ['sustainability', 'mobile'], sourceUrl: 'https://example.com' }, { title: 'AR-Enhanced Shopping Experiences', description: 'Using augmented reality to "try on" clothes or see furniture in your room before buying.', category: 'Fashion', tags: ['ar', 'ecommerce'], sourceUrl: 'https://example.com' }, { title: 'Decentralized Science (DeSci)', description: 'Using web3 tools to fund, share, and publish scientific research transparently.', category: 'Technology', tags: ['web3', 'science'], sourceUrl: 'https://example.com' }, { title: 'Adaptive Learning in Corporate Training', description: 'Companies are using AI-driven platforms to create personalized training programs for employees.', category: 'Education', tags: ['hr', 'ai'], sourceUrl: 'https://example.com' }, { title: 'Bio-integrated Architectural Design', description: 'Buildings designed with living materials like algae facades or mushroom insulation.', category: 'Design', tags: ['architecture', 'sustainability'], sourceUrl: 'https://example.com' }, { title: 'Micro-grid Energy Solutions', description: 'Localized grids that can operate independently, improving resilience against outages.', category: 'Climate', tags: ['energy', 'renewables'], sourceUrl: 'https://example.com' },];
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            initStaticEventListeners();
+            initUniversalEventListeners();
             populateCategoryDropdown();
             feather.replace();
 
@@ -194,25 +172,19 @@
             }
         });
 
-        function initStaticEventListeners() {
+        function initUniversalEventListeners() {
             document.getElementById('hamburger').addEventListener('click', () => { document.getElementById('hamburger').classList.toggle('active'); document.getElementById('nav-links').classList.toggle('active'); });
             document.querySelectorAll('.modal-overlay').forEach(modal => { modal.addEventListener('click', e => { if (e.target.matches('.modal-overlay, .modal-close')) modal.classList.remove('active'); }); });
             document.querySelector('.nav-about-link').addEventListener('click', e => { e.preventDefault(); document.getElementById('about-modal').classList.add('active'); });
             document.getElementById('auth-button').addEventListener('click', () => document.getElementById('signin-modal').classList.add('active'));
             document.getElementById('trending-board-link').addEventListener('click', e => { e.preventDefault(); if (user && (user.userType === 'professional' || user.userType === 'student')) { document.getElementById('trends-section').scrollIntoView({ behavior: 'smooth' }); } else { document.getElementById('trending-board-modal').classList.add('active'); } });
             document.getElementById('modal-signin-btn').addEventListener('click', () => { document.getElementById('trending-board-modal').classList.remove('active'); document.getElementById('signin-modal').classList.add('active'); });
-            document.getElementById('google-signin-btn').addEventListener('click', () => signInWithProvider(new firebase.auth.GoogleAuthProvider()));
-            document.getElementById('microsoft-signin-btn').addEventListener('click', () => signInWithProvider(new firebase.auth.OAuthProvider('microsoft.com')));
-            document.getElementById('signout-button').addEventListener('click', signOut);
-            document.getElementById('trend-form').addEventListener('submit', handleTrendSubmit);
         }
 
+        // --- LIVE MODE ---
         function initFirebaseAuth() {
             seedDatabaseIfNeeded();
-            // Attach live-mode event listeners
-            document.getElementById('load-more-btn').addEventListener('click', () => fetchTrends(true));
-            setupCategoryFilters(resetAndFetchTrends);
-            
+            initLiveEventListeners();
             auth.onAuthStateChanged(async firebaseUser => {
                 if (firebaseUser) await handleUserSignIn(firebaseUser);
                 else handleUserSignOut();
@@ -220,6 +192,16 @@
             });
         }
         
+        function initLiveEventListeners() {
+            document.getElementById('google-signin-btn').addEventListener('click', () => signInWithProvider(new firebase.auth.GoogleAuthProvider()));
+            document.getElementById('microsoft-signin-btn').addEventListener('click', () => signInWithProvider(new firebase.auth.OAuthProvider('microsoft.com')));
+            document.getElementById('signout-button').addEventListener('click', signOut);
+            document.getElementById('trend-form').addEventListener('submit', handleTrendSubmit);
+            document.getElementById('load-more-btn').addEventListener('click', () => fetchTrends(true));
+            setupCategoryFilters(resetAndFetchTrends);
+        }
+
+        // --- MOCK MODE ---
         function initializeAppWithMockData() {
             let mockPage = 1;
             const renderMockPage = () => {
@@ -235,8 +217,9 @@
             updateUIForSignOut();
             document.getElementById('sign-in-prompt').innerHTML = `<h2>Demo Mode</h2><p>Firebase configuration is missing. Displaying mock data.</p>`;
             document.getElementById('app-content').classList.remove('hidden');
-            setupCategoryFilters(resetAndRenderMock);
+            document.getElementById('trend-form').addEventListener('submit', (e) => { e.preventDefault(); showToast("Form submission is disabled in demo mode.", true); });
             document.getElementById('load-more-btn').addEventListener('click', () => { mockPage++; renderMockPage(); });
+            setupCategoryFilters(resetAndRenderMock);
             resetAndRenderMock();
         }
 
@@ -273,14 +256,13 @@
             });
         }
         function populateCategoryDropdown() { const select = document.getElementById('trend-category'); CATEGORIES.slice(1).forEach(cat => { const opt = document.createElement('option'); opt.value = cat; opt.textContent = cat; select.appendChild(opt); }); }
-        function resetAndFetchTrends() { if (!db) return; lastVisibleDoc = null; document.getElementById('trends-list').innerHTML = ''; fetchTrends(false); }
+        function resetAndFetchTrends() { lastVisibleDoc = null; document.getElementById('trends-list').innerHTML = ''; fetchTrends(false); }
         
         async function fetchTrends(isLoadMore = false) {
-            if (isFetching || !db) return;
+            if (isFetching) return;
             isFetching = true;
             const loadMoreBtn = document.getElementById('load-more-btn');
-            loadMoreBtn.disabled = true;
-            loadMoreBtn.textContent = 'Loading...';
+            loadMoreBtn.disabled = true; loadMoreBtn.textContent = 'Loading...';
             try {
                 let query = db.collection('trends').orderBy('voteCount', 'desc');
                 if (currentCategory !== 'All') query = query.where('category', '==', currentCategory);
@@ -298,13 +280,17 @@
         function renderTrends(trends, userVotes = [], append = false) {
             const listEl = document.getElementById('trends-list');
             if (!append) listEl.innerHTML = '';
-            if (trends.length === 0 && !append) { listEl.innerHTML = '<div class="empty-state" style="padding: 40px; text-align: center; color: var(--gray);">No trends found for this category.</div>'; return; }
+            if (trends.length === 0 && !append) { listEl.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--gray);">No trends found for this category.</div>'; return; }
             trends.forEach(trend => {
                 const createdDate = trend.createdAt?.toDate ? trend.createdAt.toDate() : new Date();
                 const cardWrapper = document.createElement('div');
                 cardWrapper.innerHTML = `<a class="trend-card-link" href="${trend.sourceUrl || '#'}" target="_blank" rel="noopener noreferrer"><div class="trend-card"><div style="display: flex; justify-content: space-between; align-items: flex-start;"><h3 style="font-size: 1.5rem; font-weight: 600;">${trend.title}</h3><div style="font-size: 0.85rem; color: var(--gray); text-align: right; white-space: nowrap; margin-left: 10px;">by ${trend.creatorName || 'Anonymous'}<br>on ${createdDate.toLocaleDateString()}</div></div><p style="color: var(--gray);">${trend.description}</p><div class="trend-tags"><span class="tag" style="background-color: var(--neon-purple); color: var(--white);">${trend.category}</span>${(trend.tags || []).map(tag => `<span class="tag">#${tag}</span>`).join('')}</div><div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;"><div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 1.5rem; font-weight: 700;">${trend.voteCount || 0}</span><span>Votes</span></div><button class="vote-btn" data-id="${trend.id}" ${userVotes.includes(trend.id) ? 'disabled' : ''}>🔥 Vote</button></div></div></a>`;
                 const voteBtn = cardWrapper.querySelector('.vote-btn');
-                voteBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); handleVote(trend.id); });
+                if (db) { // Only add vote listener if db exists
+                    voteBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); handleVote(trend.id); });
+                } else {
+                    voteBtn.disabled = true;
+                }
                 listEl.appendChild(cardWrapper.firstElementChild);
             });
             feather.replace();
@@ -312,7 +298,7 @@
 
         async function handleTrendSubmit(e) { e.preventDefault(); if (!user) { showToast('You must be signed in to submit.', true); return; } const form = e.target; const trend = { title: form.querySelector('#trend-title').value.trim(), description: form.querySelector('#trend-description').value.trim(), sourceUrl: form.querySelector('#trend-source').value.trim(), category: form.querySelector('#trend-category').value, tags: form.querySelector('#trend-tags').value.split(',').map(t => t.trim().toLowerCase().replace(/[^a-z0-9]/gi, '')).filter(Boolean), voteCount: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp(), creatorUid: user.uid, creatorName: user.displayName, }; if (!trend.title || !trend.description || !trend.sourceUrl || !trend.category) { showToast('Please fill all required fields.', true); return; } try { await db.collection('trends').add(trend); showToast('Trend submitted!'); form.reset(); resetAndFetchTrends(); } catch(err) { console.error(err); showToast('Error submitting trend.', true); } }
         async function handleVote(trendId) { if (!user) { showToast('You must be signed in to vote.', true); return; } const today = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`; const voteRef = db.collection('users').doc(user.uid).collection('votes').doc(today); const trendRef = db.collection('trends').doc(trendId); try { await db.runTransaction(async t => { const voteDoc = await t.get(voteRef); const currentVotes = voteDoc.exists ? voteDoc.data().votedTrendIds || [] : []; if (currentVotes.length >= 3) throw new Error('You have no votes left today.'); if (currentVotes.includes(trendId)) throw new Error('You have already voted for this trend.'); t.update(trendRef, { voteCount: firebase.firestore.FieldValue.increment(1) }); const newVotes = [...currentVotes, trendId]; if(voteDoc.exists) t.update(voteRef, { votedTrendIds: newVotes }); else t.set(voteRef, { votedTrendIds: newVotes }); }); showToast('Vote counted!'); } catch(err) { showToast(err.message, true); } }
-        async function seedDatabaseIfNeeded() { const trendsRef = db.collection('trends'); const snapshot = await trendsRef.limit(1).get(); if (snapshot.empty) { console.log("Seeding database..."); showToast('Setting up sample trends...'); const batch = db.batch(); seedTrends.forEach(trend => { const docRef = trendsRef.doc(); batch.set(docRef, { ...trend, voteCount: Math.floor(Math.random()*50), createdAt: firebase.firestore.FieldValue.serverTimestamp(), creatorName: 'TrendPulse Bot' }); }); await batch.commit(); } }
+        async function seedDatabaseIfNeeded() { if (!db) return; const trendsRef = db.collection('trends'); const snapshot = await trendsRef.limit(1).get(); if (snapshot.empty) { console.log("Seeding database..."); showToast('Setting up sample trends...'); const batch = db.batch(); seedTrends.forEach(trend => { const docRef = trendsRef.doc(); batch.set(docRef, { ...trend, voteCount: Math.floor(Math.random()*50), createdAt: firebase.firestore.FieldValue.serverTimestamp(), creatorName: 'TrendPulse Bot' }); }); await batch.commit(); } }
         
         // --- UI UTILITIES ---
         function updateUIForSignIn(userData) { document.getElementById('auth-button').classList.add('hidden'); const profile = document.getElementById('user-profile'); profile.style.display = 'flex'; document.getElementById('user-name').textContent = userData.displayName.split(' ')[0]; document.getElementById('user-pic').src = userData.photoURL; document.getElementById('sign-in-prompt').classList.add('hidden'); document.getElementById('app-content').classList.remove('hidden'); }
