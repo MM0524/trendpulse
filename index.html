@@ -53,7 +53,8 @@
         .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
         .form-group input, .form-group textarea { width: 100%; background: var(--dark-navy); border: 1px solid #2a2d5a; border-radius: 8px; padding: 12px; color: var(--white); font-size: 1rem; font-family: 'Outfit', sans-serif; }
         .auth-button { display: flex; align-items: center; justify-content: center; background-color: var(--neon-purple); color: var(--white); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background-color 0.3s, transform 0.2s; text-decoration: none;}
-        .auth-button:hover { background-color: #8a00d9; transform: translateY(-2px); }
+        .auth-button:hover:not(:disabled) { background-color: #8a00d9; transform: translateY(-2px); }
+        .auth-button:disabled { background-color: var(--gray); cursor: not-allowed; }
         .user-profile { display: none; align-items: center; gap: 10px; }
         .user-profile img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--neon-purple); }
         .user-role-badge { font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; }
@@ -91,7 +92,8 @@
             </ul>
             <div class="nav-right">
                 <div id="auth-container">
-                    <button id="signin-button" class="auth-button">Sign In with Google</button>
+                    <!-- FIX: Button is disabled by default to prevent race condition -->
+                    <button id="signin-button" class="auth-button" disabled>Initializing...</button>
                     <div id="user-profile" class="user-profile">
                         <img id="user-pic" src="" alt="User pic">
                         <div>
@@ -181,12 +183,18 @@
         document.addEventListener('DOMContentLoaded', () => {
             initStaticEventListeners();
             if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith("YOUR_")) {
+                dom.signInButton.textContent = "Config Missing";
                 alert("Firebase config is missing. App will not function correctly.");
                 return;
             }
             firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
+
+            // --- FIX: Enable the sign-in button only after Firebase is ready ---
+            dom.signInButton.disabled = false;
+            dom.signInButton.textContent = "Sign In with Google";
+            
             initFirebaseAuth();
         });
 
@@ -264,14 +272,7 @@
             feather.replace();
         }
         
-        // ---- FIX APPLIED HERE ----
         async function signInWithGoogle() {
-            // This check prevents the error by ensuring `auth` is initialized.
-            if (!auth) {
-                console.error("signInWithGoogle called before auth was initialized.");
-                alert("Authentication service is not ready. Please try again in a moment.");
-                return;
-            }
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 await auth.signInWithPopup(provider);
