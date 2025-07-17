@@ -105,6 +105,7 @@
                 <a href="#" id="about-link">About</a>
             </div>
             <div id="auth-container">
+                <button class="auth-button" id="auth-button">Sign In</button>
                 <div class="user-profile" id="user-profile">
                     <img id="user-avatar" src="" alt="User Avatar">
                     <span class="user-email" id="user-email"></span>
@@ -212,13 +213,17 @@
             document.getElementById('trending-board-link').addEventListener('click', showTrendingBoard);
             document.getElementById('about-link').addEventListener('click', () => document.getElementById('about-modal').classList.add('active'));
             document.getElementById('trends-list').addEventListener('click', handleTrendListClick);
-            document.getElementById("logout-button").addEventListener("click", () => {
-                window.location.href = "index.html"; 
-            });
+            document.getElementById('auth-button').addEventListener('click', signIn);
+            document.getElementById('logout-button').addEventListener('click', signOut);
             document.getElementById('load-more-btn').addEventListener('click', () => fetchTrends(true));
         }
 
         // --- AUTHENTICATION ---
+        function signIn() {
+            if (!auth) return;
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(error => console.error("Sign in error", error));
+        }
         function signOut() {
             if (!auth) return;
             auth.signOut().then(() => { window.location.href = '?'; });
