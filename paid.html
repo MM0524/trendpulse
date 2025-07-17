@@ -212,8 +212,8 @@
             document.getElementById('trending-board-link').addEventListener('click', showTrendingBoard);
             document.getElementById('about-link').addEventListener('click', () => document.getElementById('about-modal').classList.add('active'));
             document.getElementById('trends-list').addEventListener('click', handleTrendListClick);
-            document.getElementById('auth-button').addEventListener('click', signIn);
-            document.getElementById('logout-button').addEventListener('click', signOut);
+            document.getElementById("logout-button").addEventListener("click", () => {
+                window.location.href = "index.html";
             document.getElementById('load-more-btn').addEventListener('click', () => fetchTrends(true));
         }
 
