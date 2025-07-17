@@ -105,7 +105,6 @@
                 <a href="#" id="about-link">About</a>
             </div>
             <div id="auth-container">
-                <button class="auth-button" id="auth-button">Sign In</button>
                 <div class="user-profile" id="user-profile">
                     <img id="user-avatar" src="" alt="User Avatar">
                     <span class="user-email" id="user-email"></span>
@@ -219,11 +218,6 @@
         }
 
         // --- AUTHENTICATION ---
-        function signIn() {
-            if (!auth) return;
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(error => console.error("Sign in error", error));
-        }
         function signOut() {
             if (!auth) return;
             auth.signOut().then(() => { window.location.href = '?'; });
