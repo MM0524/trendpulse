@@ -6,6 +6,8 @@
     <title>TrendPulse | Prioritized Edition</title>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Gemini API Manager -->
+    <script src="tiktok.js"></script>
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23A100FF'/></svg>">
     <style>
@@ -68,6 +70,59 @@
         .trend-meta { text-align: right; font-size: 0.8rem; color: var(--text-muted-color); white-space: nowrap; }
         .trend-description { margin-bottom: 1rem; color: var(--text-muted-color); }
         .trend-ai-insight { display: none; background-color: rgba(161, 0, 255, 0.05); border-left: 3px solid var(--primary-color); padding: 0.75rem 1rem; margin: 0.5rem 0 1rem 0; border-radius: 4px; font-size: 0.85rem; color: var(--text-muted-color); font-style: italic; }
+        
+        .loading-spinner { 
+            width: 20px; 
+            height: 20px; 
+            border: 2px solid rgba(161, 0, 255, 0.1); 
+            border-top: 2px solid var(--primary-color); 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto; 
+        }
+        
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        
+        .ai-insight-content { 
+            text-align: left; 
+            line-height: 1.6; 
+        }
+        
+        .ai-insight-content ul { 
+            margin: 1rem 0; 
+            padding-left: 1.5rem; 
+        }
+        
+        .ai-insight-content li { 
+            margin-bottom: 0.5rem; 
+        }
+        
+        .ai-status-indicator {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted-color);
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-status-indicator.online {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+        
+        .ai-status-indicator.offline {
+            border-color: #f44336;
+            color: #f44336;
+        }
         body.work-account-view .trend-ai-insight { display: block; }
         .trend-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         .trend-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
@@ -144,6 +199,9 @@
 <body>
     <header class="header">
         <div class="logo" id="logo"><span class="logo-trend">Trend</span><span class="logo-pulse">Pulse</span></div>
+        <div class="ai-status-indicator" id="ai-status-indicator">
+            <span id="ai-status-text">AI: Đang kiểm tra...</span>
+        </div>
         <nav id="main-nav">
             <ul class="nav-links">
                 <li><a href="#" id="nav-top-trends">Top Trends</a></li>
@@ -168,7 +226,7 @@
         </div>
     </header>
     <main class="main-container" id="main-view-container">
-        <div class="demo-banner"><h2>Welcome to TrendPulse</h2><p>Deeper than Google Analysis. Faster than TikTok Discover.</p></div>
+       <div class="demo-banner"><h2>Welcome to TrendPulse</h2><p>Deeper than Google Analysis. Faster than TikTok Discover.</p></div>
         <section class="trending-container">
             <div class="trending-header">
                 <div class="trending-title-group" id="trending-title-group"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg><span id="trending-header-text">Trending Now</span></div>
@@ -196,7 +254,13 @@
     <div class="modal-overlay" id="premium-modal"><div class="modal-content"><button class="modal-close" data-close="premium-modal" aria-label="Close premium dialog">&times;</button><h3 class="modal-title">Premium Access Required</h3><p class="modal-body">Please sign in with a company or school email to view the Trending Board.</p><div class="modal-actions"><button class="btn btn-primary" id="premium-login-btn">Log In</button></div></div></div>
     <div class="modal-overlay" id="login-choice-modal"><div class="modal-content"><button class="modal-close" data-close="login-choice-modal" aria-label="Close login dialog">&times;</button><h3 class="modal-title">Sign In</h3><p class="modal-body">Choose an account to continue to TrendPulse.</p><div class="modal-actions"><button class="btn btn-social" id="login-google-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Sign in with Google</span></button><button class="btn btn-social" id="login-work-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg><span>Sign in with Work/School</span></button></div></div></div>
     <div class="modal-overlay" id="trending-board-modal"><div class="modal-content" id="trending-board-content"><button class="modal-close" data-close="trending-board-modal" aria-label="Close trending board dialog">&times;</button><h3 class="modal-title">Trending Board Dashboard</h3><div id="hot-trends-container"><h4>Currently Hot Trends (Overall)</h4><canvas id="hot-trends-chart"></canvas></div><div class="leaderboards-container" id="category-leaderboards"></div></div></div>
-    <div class="modal-overlay" id="ai-insight-modal"><div class="modal-content"><button class="modal-close" data-close="ai-insight-modal" aria-label="Close AI insight dialog">&times;</button><h3 class="modal-title" id="ai-insight-title">AI Insight</h3><div id="ai-insight-body" class="modal-body"></div></div></div>
+    <div class="modal-overlay" id="ai-insight-modal">
+        <div class="modal-content">
+            <button class="modal-close" data-close="ai-insight-modal" aria-label="Close AI insight dialog">&times;</button>
+            <h3 class="modal-title" id="ai-insight-title">AI Insight</h3>
+            <div id="ai-insight-body" class="modal-body ai-insight-content"></div>
+        </div>
+    </div>
     <div class="modal-overlay" id="about-modal"><div class="modal-content"><button class="modal-close" data-close="about-modal" aria-label="Close about dialog">&times;</button><h3 class="modal-title">About TrendPulse</h3><p class="modal-body">A crowdsourced platform to predict, visualize, and analyze emerging trends. Click a trend's title to get AI-powered insights.</p></div></div>
 
     <script>
@@ -246,8 +310,67 @@
         signIn = (type) => { user = { isLoggedIn: true, accountType: type, email: type === 'personal' ? 'privatemail@gmail.com' : 'pro@company.com', preferences: [], hasSetPreferences: false, followedTrends: [] }; closeModal('login-choice-modal'); updateAuthUI(); if (type === 'work' && !user.hasSetPreferences) { populatePreferenceCheckboxes(); openModal('preferences-modal'); } };
         generateCategoryLeaderboards = (containerId, categoriesToShow) => { const container = document.getElementById(containerId); container.innerHTML = ''; categoriesToShow.sort().forEach(category => { const topTrends = allTrends.filter(t => t.category === category).sort((a,b) => (user.followedTrends.includes(b.id) - user.followedTrends.includes(a.id)) || b.votes - a.votes).slice(0,3); if(topTrends.length > 0) { const leaderboardDiv = document.createElement('div'); leaderboardDiv.className = 'leaderboard-widget'; let listItems = topTrends.map(t => `<li><span>${t.title}</span><span class="vote-display">${t.votes} 🔥</span></li>`).join(''); leaderboardDiv.innerHTML = `<h4>Top in ${category}</h4><ol>${listItems}</ol>`; container.appendChild(leaderboardDiv); } }); };
         createHotTrendsChart = () => { const ctx = document.getElementById('hot-trends-chart').getContext('2d'); if(hotTrendsChart) hotTrendsChart.destroy(); const sortedTrends = [...allTrends].sort((a,b)=>b.votes-a.votes).slice(0,7); hotTrendsChart = new Chart(ctx, { type: 'bar', data: { labels: sortedTrends.map(t=>t.title), datasets: [{ label: 'Votes', data: sortedTrends.map(t=>t.votes), backgroundColor: 'rgba(161, 0, 255, 0.6)', borderColor: 'rgba(161, 0, 255, 1)', borderWidth: 1 }] }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false }, tooltip: { borderColor: '#A100FF' } }, scales: { x: { grid: { color: 'rgba(45, 46, 73, 0.5)' }, ticks: { color: '#8a8da0' } }, y: { grid: { display: false }, ticks: { color: '#e3e8f0' } } } } }); generateCategoryLeaderboards('category-leaderboards', ['Gaming', 'Technology', 'Fashion']); };
-        getAIInsight = async (trend, promptType = 'general') => { let prompt; if (promptType === 'viral') { prompt = `You are a viral marketing expert AI. For the trend "${trend.title}" in the "${trend.category}" category, provide 3 short, actionable suggestions for a creator or business to go viral. Use bullet points and keep it concise.`; } else { prompt = `You are a market analyst AI. Provide a concise business analysis for the trend: "${trend.title}". Cover: 1. Market Impact, 2. Target Audience, 3. Monetization.`; } const API_KEY = 'YOUR_GEMINI_API_KEY'; if(API_KEY==='YOUR_GEMINI_API_KEY') throw new Error("API Key not configured."); const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({"contents":[{"parts":[{"text":prompt}]}]}) }); if(!response.ok) throw new Error(`API Error: ${response.statusText}`); const data = await response.json(); return data.candidates[0].content.parts[0].text; };
-        handleTrendListInteraction = (e) => { const titleElement = e.target.closest('.trend-title'); if (titleElement) { if (user.accountType !== 'work') return; const trendId = parseInt(titleElement.closest('.trend-card').dataset.trendId); const trend = allTrends.find(t => t.id === trendId); const modalBody = document.getElementById('ai-insight-body'); document.getElementById('ai-insight-title').textContent = `AI Insight for "${trend.title}"`; modalBody.innerHTML = `<div class="loading-spinner" style="border-top-color: var(--primary-color);"></div>`; openModal('ai-insight-modal'); const promptType = currentView === 'forU' ? 'viral' : 'general'; getAIInsight(trend, promptType).then(insight => { modalBody.innerHTML = insight.replace(/\n/g, '<br>'); }).catch(err => { modalBody.textContent = `Could not generate AI insight. ${err.message}`; console.error(err); }); } if (e.target.matches('.tag.hashtag')) { switchView('main'); currentFilter = { type: 'tag', value: e.target.dataset.tag }; updateUIForFilter(); } const followButton = e.target.closest('.btn-follow'); if (followButton) { if (!user.isLoggedIn || user.accountType !== 'work') return; const trendId = parseInt(followButton.dataset.id); const isFollowed = user.followedTrends.includes(trendId); if (isFollowed) { user.followedTrends = user.followedTrends.filter(id => id !== trendId); } else { user.followedTrends.push(trendId); } followButton.classList.toggle('followed', !isFollowed); followButton.innerHTML = !isFollowed ? 'Following' : '❤️ Follow'; if(currentView === 'forU') displayTrends(); } };
+        getAIInsight = async (trend, promptType = 'general') => { 
+            try {
+                // Khởi tạo Gemini API Manager
+                const geminiManager = new GeminiAPIManager('AIzaSyDQ_TeD1QcZO3PRMd6Z2ifQZUgsgx_1Pdc');
+                
+                // Kiểm tra trạng thái API trước khi gọi
+                const isAPIReady = await geminiManager.checkAPIStatus();
+                if (!isAPIReady) {
+                    throw new Error('API Gemini không khả dụng. Vui lòng thử lại sau.');
+                }
+                
+                // Phân tích xu hướng với AI
+                const insight = await geminiManager.analyzeTrend(trend, promptType);
+                return insight;
+                
+            } catch (error) {
+                console.error('Gemini API Error:', error);
+                throw new Error(`Lỗi AI: ${error.message}`);
+            }
+        };
+        handleTrendListInteraction = (e) => { 
+            const titleElement = e.target.closest('.trend-title'); 
+            if (titleElement) { 
+                if (user.accountType !== 'work') return; 
+                const trendId = parseInt(titleElement.closest('.trend-card').dataset.trendId); 
+                const trend = allTrends.find(t => t.id === trendId); 
+                const modalBody = document.getElementById('ai-insight-body'); 
+                document.getElementById('ai-insight-title').textContent = `AI Insight for "${trend.title}"`; 
+                modalBody.innerHTML = `<div class="loading-spinner"></div><p style="text-align: center; margin-top: 1rem; color: var(--text-muted-color);">Đang phân tích xu hướng...</p>`; 
+                openModal('ai-insight-modal'); 
+                const promptType = currentView === 'forU' ? 'viral' : 'general'; 
+                getAIInsight(trend, promptType).then(insight => { 
+                    modalBody.innerHTML = `<div class="ai-insight-content">${insight.replace(/\n/g, '<br>')}</div>`; 
+                }).catch(err => { 
+                    modalBody.innerHTML = `<div style="text-align: center; color: #ff6b6b;">
+                        <p>Không thể tạo AI insight.</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">${err.message}</p>
+                    </div>`; 
+                    console.error(err); 
+                }); 
+            } 
+            if (e.target.matches('.tag.hashtag')) { 
+                switchView('main'); 
+                currentFilter = { type: 'tag', value: e.target.dataset.tag }; 
+                updateUIForFilter(); 
+            } 
+            const followButton = e.target.closest('.btn-follow'); 
+            if (followButton) { 
+                if (!user.isLoggedIn || user.accountType !== 'work') return; 
+                const trendId = parseInt(followButton.dataset.id); 
+                const isFollowed = user.followedTrends.includes(trendId); 
+                if (isFollowed) { 
+                    user.followedTrends = user.followedTrends.filter(id => id !== trendId); 
+                } else { 
+                    user.followedTrends.push(trendId); 
+                } 
+                followButton.classList.toggle('followed', !isFollowed); 
+                followButton.innerHTML = !isFollowed ? 'Following' : '❤️ Follow'; 
+                if(currentView === 'forU') displayTrends(); 
+            } 
+        };
 
         // --- EVENT LISTENER ATTACHMENTS ---
         DOM.hamburgerMenu.addEventListener('click', () => { DOM.hamburgerMenu.classList.toggle('active'); DOM.mainNav.classList.toggle('nav-active'); });
@@ -280,6 +403,34 @@
         // --- INITIALIZATION ---
         populateCategoryFilters();
         updateAuthUI();
+        
+        // Kiểm tra trạng thái AI khi khởi động
+        async function checkAIStatus() {
+            try {
+                const geminiManager = new GeminiAPIManager('AIzaSyDQ_TeD1QcZO3PRMd6Z2ifQZUgsgx_1Pdc');
+                const isOnline = await geminiManager.checkAPIStatus();
+                
+                const statusIndicator = document.getElementById('ai-status-indicator');
+                const statusText = document.getElementById('ai-status-text');
+                
+                if (isOnline) {
+                    statusIndicator.className = 'ai-status-indicator online';
+                    statusText.textContent = 'AI: Sẵn sàng';
+                } else {
+                    statusIndicator.className = 'ai-status-indicator offline';
+                    statusText.textContent = 'AI: Không khả dụng';
+                }
+            } catch (error) {
+                const statusIndicator = document.getElementById('ai-status-indicator');
+                const statusText = document.getElementById('ai-status-text');
+                statusIndicator.className = 'ai-status-indicator offline';
+                statusText.textContent = 'AI: Lỗi kết nối';
+                console.error('AI Status Check Failed:', error);
+            }
+        }
+        
+        // Kiểm tra trạng thái AI sau khi trang load
+        setTimeout(checkAIStatus, 1000);
     });
     </script>
 </body>
